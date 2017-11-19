@@ -3,7 +3,7 @@ import org.junit.Test;
 import java.io.*;
 import java.util.Scanner;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 
 public class SolutionTest {
@@ -18,7 +18,7 @@ public class SolutionTest {
         String outfile = SolutionTest.class.getClassLoader().getResource("output00.txt").getFile();
         InputStream eis = new FileInputStream(outfile);
         Scanner s = new Scanner(eis).useDelimiter("\\A");
-        String expectedResult =  s.hasNext() ? s.next() : "";
+        String expectedResult = s.hasNext() ? s.next() : "";
 
         String result = out.toString().trim();
         assertEquals(result, expectedResult);
@@ -35,7 +35,7 @@ public class SolutionTest {
         String outfile = SolutionTest.class.getClassLoader().getResource("output01.txt").getFile();
         InputStream eis = new FileInputStream(outfile);
         Scanner s = new Scanner(eis).useDelimiter("\\A");
-        String expectedResult =  s.hasNext() ? s.next() : "";
+        String expectedResult = s.hasNext() ? s.next() : "";
 
         String result = out.toString().trim();
         assertEquals(result, expectedResult);
@@ -52,7 +52,7 @@ public class SolutionTest {
         String outfile = SolutionTest.class.getClassLoader().getResource("output02.txt").getFile();
         InputStream eis = new FileInputStream(outfile);
         Scanner s = new Scanner(eis).useDelimiter("\\A");
-        String expectedResult =  s.hasNext() ? s.next() : "";
+        String expectedResult = s.hasNext() ? s.next() : "";
 
         String result = out.toString().trim();
         assertEquals(result, expectedResult);
@@ -69,7 +69,7 @@ public class SolutionTest {
         String outfile = SolutionTest.class.getClassLoader().getResource("output03.txt").getFile();
         InputStream eis = new FileInputStream(outfile);
         Scanner s = new Scanner(eis).useDelimiter("\\A");
-        String expectedResult =  s.hasNext() ? s.next() : "";
+        String expectedResult = s.hasNext() ? s.next() : "";
 
         String result = out.toString().trim();
         assertEquals(result, expectedResult);
@@ -86,7 +86,7 @@ public class SolutionTest {
         String outfile = SolutionTest.class.getClassLoader().getResource("output04.txt").getFile();
         InputStream eis = new FileInputStream(outfile);
         Scanner s = new Scanner(eis).useDelimiter("\\A");
-        String expectedResult =  s.hasNext() ? s.next() : "";
+        String expectedResult = s.hasNext() ? s.next() : "";
 
         String result = out.toString().trim();
         assertEquals(result, expectedResult);

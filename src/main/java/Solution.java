@@ -93,34 +93,34 @@ public class Solution {
     private static final int MOD_VALUE = (int) (Math.pow(10, 9) + 7);
     private static final int maxn = (int) (5 * 1e5 + 5);
 
-    private static final Set<Integer>[] adj = new HashSet[maxn];
-    private static final List<Pair<Integer, Integer>>[] g = new List[maxn];
+    private final Set<Integer>[] adj = new HashSet[maxn];
+    private final List<Pair<Integer, Integer>>[] g = new List[maxn];
 
-    static {
+    public Solution() {
         for (int i = 0; i < maxn; i++) {
             adj[i] = new HashSet<Integer>();
             g[i] = new LinkedList<Pair<Integer, Integer>>();
         }
     }
 
-    private static final int[][] LCA = new int[maxn][22];
-    private static final int[] vis = new int[maxn];
-    private static final int[] sz = new int[maxn];
-    private static final int[] L = new int[maxn];
-    private static final int[] inp = new int[maxn];
-    private static final int[] out = new int[maxn];
-    private static final boolean[] check = new boolean[maxn];
-    private static final long[][] dp = new long[2][maxn];
-    private static final long[] lev = new long[maxn];
+    private final int[][] LCA = new int[maxn][22];
+    private final int[] vis = new int[maxn];
+    private final int[] sz = new int[maxn];
+    private final int[] L = new int[maxn];
+    private final int[] inp = new int[maxn];
+    private final int[] out = new int[maxn];
+    private final boolean[] check = new boolean[maxn];
+    private final long[][] dp = new long[2][maxn];
+    private final long[] lev = new long[maxn];
 
-    private static int lg;
+    private int lg;
 
-    private static double log2(int n) {
+    private double log2(int n) {
         return Math.log(n) / Math.log(2);
     }
 
 
-    private static void dfs() {
+    private void dfs() {
         Queue<Integer> Q = new LinkedList<>();
         Q.add(1);
         vis[1] = 1;
@@ -177,7 +177,7 @@ public class Solution {
         }
     }
 
-    private static void constructLCA(int n) {
+    private void constructLCA(int n) {
         lg = (int) Math.ceil(log2(n));
         dfs();
         for (int i = 1; i <= lg; i++) {
@@ -189,7 +189,7 @@ public class Solution {
         }
     }
 
-    private static int getLca(int x, int y) {
+    private int getLca(int x, int y) {
         if (L[x] < L[y]) {
             x = x + y;
             y = x - y;
@@ -210,11 +210,11 @@ public class Solution {
         return LCA[x][0];
     }
 
-    private static boolean anc(int p, int u) {
+    private boolean anc(int p, int u) {
         return inp[p] <= inp[u] && out[p] >= out[u];
     }
 
-    private static long solve(int u) {
+    private long solve(int u) {
         long ans = 0;
         Queue<Integer> Q = new LinkedList<>();
         Q.add(u);
@@ -237,7 +237,7 @@ public class Solution {
             u = S.pop();
             vis[u] = 0;
             dp[0][u] = check[u] ? u : 0;
-            dp[1][u] = check[u] ? lev[u] * u : 0;
+            dp[1][u] = check[u] ? 1L * lev[u] * u : 0;
             dp[1][u] %= MOD_VALUE;
             long s = 0;
             for (Pair<Integer, Integer> it : g[u]) {
@@ -253,75 +253,78 @@ public class Solution {
             // ok
             for (Pair<Integer, Integer> it : g[u]) {
                 if (vis[it.first] == 0) {
-                    ans += (dp[1][it.first] - dp[0][it.first] * lev[u] % MOD_VALUE) * (s - dp[0][it.first]) % MOD_VALUE;
+                    ans += 1L * (dp[1][it.first] - 1L * dp[0][it.first] * lev[u] % MOD_VALUE) * (s - dp[0][it.first]) % MOD_VALUE;
                     if (ans >= MOD_VALUE) ans -= MOD_VALUE;
                     if (ans < 0) ans += MOD_VALUE;
                 }
             }
-            if (check[u]) ans += (dp[1][u] - lev[u] * dp[0][u] % MOD_VALUE) * u % MOD_VALUE;
+            if (check[u]) ans += 1L * (dp[1][u] - 1L * lev[u] * dp[0][u] % MOD_VALUE) * u % MOD_VALUE;
             if (ans >= MOD_VALUE) ans -= MOD_VALUE;
             if (ans < 0) ans += MOD_VALUE;
         }
         return ans;
     }
 
+    public void execute(Scanner sc) {
+        int n = sc.nextInt();
+        int q = sc.nextInt();
+        for (int i = 1; i <= n - 1; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            adj[u].add(v);
+            adj[v].add(u);
+        }
+        constructLCA(n);
+
+        while (q-- > 0) {
+            int k = sc.nextInt();
+            ArrayList<Pair<Integer, Integer>> Q = new ArrayList<>();
+            Set<Integer> K = new HashSet<>();
+            for (int i = 1; i <= k; i++) {
+                int x = sc.nextInt();
+                check[x] = true;
+                if (!K.contains(x)) {
+                    K.add(x);
+                    Q.add(new Pair<>(inp[x], x));
+                }
+            }
+            k = Q.size();
+            Collections.sort(Q);
+            for (int i = 0; i <= k - 2; i++) {
+                int lca = getLca(Q.get(i).second, Q.get(i + 1).second);
+                if (!K.contains(lca)) {
+                    K.add(lca);
+                    Q.add(new Pair<>(inp[lca], lca));
+                }
+            }
+            Collections.sort(Q);
+            Stack<Integer> s = new Stack<>();
+            s.push(Q.get(0).second);
+            for (int i = 1; i < Q.size(); i++) {
+                while (!anc(s.peek(), Q.get(i).second)) {
+                    s.pop();
+                }
+                Pair<Integer, Integer> t1 = new Pair(Q.get(i).second, L[Q.get(i).second] - L[s.peek()]);
+                g[s.peek()].add(t1);
+                Pair<Integer, Integer> t2 = new Pair(s.peek(), L[Q.get(i).second] - L[s.peek()]);
+                g[Q.get(i).second].add(t2);
+                s.push(Q.get(i).second);
+            }
+            long ans = solve(Q.get(0).second);
+            System.out.println(ans);
+            for (Pair<Integer, Integer> it : Q) {
+                g[it.second].clear();
+                dp[0][it.second] = dp[1][it.second] = lev[it.second] = 0;
+                check[it.second] = false;
+            }
+
+        }
+    }
+
+
     public static void main(String[] args) {
-
         try (Scanner sc = new Scanner(System.in)) {
-            int n = sc.nextInt();
-            int q = sc.nextInt();
-            for (int i = 1; i <= n - 1; i++) {
-                int u = sc.nextInt();
-                int v = sc.nextInt();
-                adj[u].add(v);
-                adj[v].add(u);
-            }
-            constructLCA(n);
-
-            while (q-- > 0) {
-                int k = sc.nextInt();
-                ArrayList<Pair<Integer, Integer>> Q = new ArrayList<>();
-                Set<Integer> K = new HashSet<>();
-                for (int i = 1; i <= k; i++) {
-                    int x = sc.nextInt();
-                    check[x] = true;
-                    if (!K.contains(x)) {
-                        K.add(x);
-                        Q.add(new Pair<>(inp[x], x));
-                    }
-                }
-                k = Q.size();
-                Collections.sort(Q);
-                for (int i = 0; i <= k - 2; i++) {
-                    int lca = getLca(Q.get(i).second, Q.get(i + 1).second);
-                    if (!K.contains(lca)) {
-                        K.add(lca);
-                        Q.add(new Pair<>(inp[lca], lca));
-                    }
-                }
-                Collections.sort(Q);
-                Stack<Integer> s = new Stack<>();
-                s.push(Q.get(0).second);
-                for (int i = 1; i < Q.size(); i++) {
-                    while (!anc(s.peek(), Q.get(i).second)) {
-                        s.pop();
-                    }
-                    Pair<Integer, Integer> t1 = new Pair(Q.get(i).second, L[Q.get(i).second] - L[s.peek()]);
-                    g[s.peek()].add(t1);
-                    Pair<Integer, Integer> t2 = new Pair(s.peek(), L[Q.get(i).second] - L[s.peek()]);
-                    g[Q.get(i).second].add(t2);
-                    s.push(Q.get(i).second);
-                }
-                long ans = solve(Q.get(0).second);
-                System.out.println(ans);
-                for (Pair<Integer, Integer> it : Q) {
-                    g[it.second].clear();
-                    dp[0][it.second] = dp[1][it.second] = lev[it.second] = 0;
-                    check[it.second] = false;
-                }
-
-            }
-
+            new Solution().execute(sc);
         }
     }
 }
